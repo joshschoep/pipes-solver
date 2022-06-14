@@ -39,6 +39,7 @@ class Pipe:
         self.position = position
         self.source = source
         self.selectable = selectable
+        self.validated = False
     
     def __repr__(self) -> str:
         return f'[{"Source" if self.source else "Pipe"}: {self.position} {self.type} {self.direction}]'
@@ -51,6 +52,16 @@ class Pipe:
     
     def rotateCounterclockwise(self):
         self.direction -= 1
+    
+    def getOpenDirections(self) -> list[Direction]:
+        if self.type == PipeType.NUB:
+            return [self.direction]
+        elif self.type == PipeType.LINE:
+            return [self.direction, self.direction + 2]
+        elif self.type == PipeType.LBAR:
+            return [self.direction, self.direction + 1]
+        elif self.type == PipeType.TBAR:
+            return [self.direction, self.direction + 1, self.direction + 2]
     
 
     
