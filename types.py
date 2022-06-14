@@ -25,6 +25,9 @@ class Position:
     def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
+    
+    def __str__(self):
+        return f'({self.x}, {self.y})'
 
 class Pipe:
     def __init__(self, type: PipeType, direction: Direction, position=Position(1, 1), source=False, selectable=True):
@@ -34,11 +37,11 @@ class Pipe:
         self.source = source
         self.selectable = selectable
     
-    def __str__(self) -> str:
-        return f'[{"Source" if self.source else "Pipe"}: {self.type} {self.direction}]\n'
-
     def __repr__(self) -> str:
-        return self.__str__()
+        return f'[{"Source" if self.source else "Pipe"}: {self.position} {self.type} {self.direction}]'
+
+    def __str__(self) -> str:
+        return f'[ {"Source:" if self.source else "Pipe:  "}\t{self.position}\t{self.type}\t{self.direction}\t]'
 
     def rotateClockwise(self):
         self.direction += 1

@@ -1,3 +1,4 @@
+from math import floor, sqrt
 import sys
 from bs4 import BeautifulSoup
 from requests_html import HTMLSession
@@ -9,8 +10,8 @@ session = HTMLSession()
 def get_all_cell_classes(tag):
     return tag.has_attr('class') and 'cell' in tag['class']
 
-makePipe = lambda cellInfo : Pipe(cellInfo[0], cellInfo[1])
-makeSource = lambda cellInfo : Pipe(cellInfo[0], cellInfo[1], source=True)
+makePipe = lambda cellInfo, pos : Pipe(cellInfo[0], cellInfo[1], position=pos)
+makeSource = lambda cellInfo, pos : Pipe(cellInfo[0], cellInfo[1], position=pos, source=True)
 
 # All angled and multi-angled pieces are denoted starting from the most counter-clockwise
 # open end
@@ -36,12 +37,17 @@ cellTypeMap = {
 }
 
 def getGameBoard(url='https://www.puzzle-pipes.com/') -> list[Pipe]:
-    response = session.get('https://www.puzzle-pipes.com/')
+    response = session.get(url)
     response.html.render()
 
     puzzleCells = BeautifulSoup(response.html.find('#game', first=True).html, 'lxml')
-    cellList = [makeSource(cellTypeMap[cell['class'][2]]) if "source" in cell['class'] else makePipe(cellTypeMap[cell['class'][2]]) for cell in puzzleCells.find_all(get_all_cell_classes)]
+    cellClassList = [cell['class'] for cell in puzzleCells.find_all(get_all_cell_classes)]
+    rows = cols = int(sqrt(len(cellClassList)))
+
+    cellList = [makeSource(cellTypeMap[classes[2]], (en % cols, floor(en / rows))) if 'source' in classes else makePipe(cellTypeMap[classes[2]], (en % cols, floor(en / rows))) for en, classes in enumerate(cellClassList)]
+
     return cellList
 
 if __name__ == "__main__":
-    print(getGameBoard(sys.argv[1] if len(sys.argv) >= 2 else None))
+    for pipe in getGameBoard(sys.argv[1] if len(sys.argv) >= 2 else None):
+        print(pipe)
