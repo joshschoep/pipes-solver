@@ -40,12 +40,13 @@ class Pipe:
         self.source = source
         self.selectable = selectable
         self.validated = False
+        self.valid = False
     
     def __repr__(self) -> str:
         return f'[{"Source" if self.source else "Pipe"}: {self.position} {self.type} {self.direction}]'
 
     def __str__(self) -> str:
-        return f'[ {"Source:" if self.source else "Pipe:  "}\t{self.position}\t{self.type}\t{self.direction}\t]'
+        return f'{"[v]" if self.valid else ""}[ {"Source:" if self.source else "Pipe:  "}\t{self.position}\t{self.type}\t{self.direction}\t]'
 
     def rotateClockwise(self):
         self.direction += 1
